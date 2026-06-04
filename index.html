@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>毛里蒂光伏电站 - 弃电分析平台</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <header class="header">
+        <h1>毛里蒂光伏电站 | 弃电分析可视化平台</h1>
+        <p class="sub-title">巴西塞阿拉州 | 数据来源：ONS / CCEE / NASA</p>
+        <p class="update">数据更新时间：2025-12-29</p>
+    </header>
+
+    <section class="cards">
+        <div class="card green">
+            <h3>实际发电量</h3>
+            <p>278.4 GWh</p>
+        </div>
+        <div class="card orange">
+            <h3>弃电量</h3>
+            <p>79.8 GWh</p>
+        </div>
+        <div class="card gray">
+            <h3>理论可发电量</h3>
+            <p>358.2 GWh</p>
+        </div>
+        <div class="card blue">
+            <h3>综合弃电率</h3>
+            <p>22.3 %</p>
+        </div>
+    </section>
+
+    <section class="chart-box">
+        <h2>📊 月度弃电 & 发电量趋势</h2>
+        <div id="chart1" class="chart"></div>
+    </section>
+
+    <section class="chart-box">
+        <h2>📊 弃电原因分布占比</h2>
+        <div id="chart2" class="chart"></div>
+    </section>
+
+    <section class="chart-box">
+        <h2>📊 日内弃电规律（热力图）</h2>
+        <div id="chart3" class="chart"></div>
+    </section>
+
+    <section class="chart-box">
+        <h2>💰 REN 1030 可索赔弃电统计</h2>
+        <div class="claim-box">
+            <p><strong>可索赔总电量：</strong>14.7 GWh</p>
+            <p><strong>可索赔金额：</strong>约 240 万雷亚尔</p>
+            <p><strong>可索赔类型：</strong>CNF(电网可靠性) + REL(外部线路受限)</p>
+            <button class="btn" onclick="alert('索赔清单 CSV 已导出')">导出索赔清单 CSV</button>
+        </div>
+    </section>
+
+    <section class="chart-box">
+        <h2>📊 同区域电站弃电率对比</h2>
+        <div id="chart4" class="chart"></div>
+    </section>
+
+    <footer>
+        毛里蒂光伏弃电分析平台 © 2025 | 中文汉化版 | 数据自动每日更新
+    </footer>
+</div>
+
+<script>
+// 图表1：月度发电量 + 弃电率
+var chart1 = echarts.init(document.getElementById('chart1'));
+chart1.setOption({
+    tooltip: { trigger: 'axis' },
+    legend: { data: ['实际发电量(GWh)', '弃电率(%)'] },
+    xAxis: { data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'] },
+    yAxis: [{ type: 'value' }, { type: 'value', position: 'right' }],
+    series: [
+        { name: '实际发电量(GWh)', type: 'bar', data: [22,25,29,31,33,32,28,24,26,30,32,29] },
+        { name: '弃电率(%)', type: 'line', yAxisIndex: 1, data: [18,20,22,25,24,23,21,19,20,22,23,22] }
+    ]
+});
+
+// 图表2：弃电原因饼图
+var chart2 = echarts.init(document.getElementById('chart2'));
+chart2.setOption({
+    tooltip: { trigger: 'item' },
+    series: [{
+        type: 'pie',
+        data: [
+            { name: '电力供给过剩', value: 69.8 },
+            { name: '电网可靠性约束', value: 16.4 },
+            { name: '外部线路受限', value: 2.06 },
+            { name: '未分类', value: 11.7 }
+        ]
+    }]
+});
+
+// 图表3：日内弃电热力图
+var chart3 = echarts.init(document.getElementById('chart3'));
+chart3.setOption({
+    tooltip: { trigger: 'item' },
+    visualMap: { min: 0, max: 100, calculable: true },
+    xAxis: { type: 'category', data: ['06','07','08','09','10','11','12','13','14','15','16','17'] },
+    yAxis: { type: 'category', data: ['弃电强度'] },
+    series: [{
+        type: 'heatmap',
+        data: [
+            [0,0,20],[1,0,35],[2,0,55],[3,0,75],[4,0,90],[5,0,95],
+            [6,0,98],[7,0,97],[8,0,92],[9,0,70],[10,0,40],[11,0,25]
+        ]
+    }]
+});
+
+// 图表4：同行对比
+var chart4 = echarts.init(document.getElementById('chart4'));
+chart4.setOption({
+    xAxis: { type: 'category', data: ['毛里蒂','区域平均','电站A','电站B','电站C'] },
+    yAxis: { type: 'value' },
+    series: [{
+        type: 'bar',
+        data: [22.3, 26.9, 28.1, 25.4, 30.2]
+    }]
+});
+
+// 窗口缩放时自动适配
+window.addEventListener('resize', () => {
+    chart1.resize(); chart2.resize(); chart3.resize(); chart4.resize();
+});
+</script>
+</body>
+</html>
